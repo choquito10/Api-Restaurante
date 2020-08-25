@@ -1,0 +1,10 @@
+CREATE TABLE usuarios (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  usuario VARCHAR(60) NOT NULL,
+  nombre VARCHAR(200) NOT NULL,
+  email VARCHAR(200) NOT NULL UNIQUE,
+  telefono INT(15) NOT NULL,
+  direccion VARCHAR(200) NOT NULL,
+  clave VARCHAR(50) NOT NULL,
+  rol_admin BOOLEAN  NOT NULL
+);
