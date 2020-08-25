@@ -25,3 +25,9 @@
 
 ## rutas de platos
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/b44912104e18c6c5fc1a)
+
+
+
+## url del repositorio
+
+https://github.com/choquito10/api-restaurante
