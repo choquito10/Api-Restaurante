@@ -5,5 +5,5 @@ CREATE TABLE platosDePedidos (
   CONSTRAINT FK_platoPedido FOREIGN KEY (id_plato)
   REFERENCES platos(id),
   CONSTRAINT FK_pedido FOREIGN KEY (id_pedido)
-  REFERENCES pedidos(id)
+  REFERENCES pedidos(id)  ON DELETE CASCADE ON UPDATE CASCADE
 )

@@ -98,6 +98,7 @@ async function pedidoEspecifico(idPedi) {
             return { estado, precio, forma_pago, direccion, usuario, nombre, email, telefono, platosDelPedido: datosPlatos };
         }
         throw new Error('id del pedido erroneo')
+
     } catch (error) {
         throw new Error(error)
     }

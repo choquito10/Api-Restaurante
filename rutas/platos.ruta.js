@@ -44,7 +44,7 @@ ruta.delete('/', verificarToken, async(req, res, next) => {
         let resultado = await eliminarPlato(req.query);
         res.json(resultado)
     } catch (error) {
-        next({ numero: 400, error })
+        next({ numero: 400, error: error.message })
     }
 
 })

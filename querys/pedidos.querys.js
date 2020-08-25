@@ -7,7 +7,7 @@ const idPlato = "SELECT id FROM platos WHERE id = ?";
 const idPedidoConIdPedido = "SELECT * FROM pedidos WHERE id = ?";
 const todoDelUsuario = "SELECT * FROM usuarios WHERE id = ?";
 const idPlatos = "SELECT id_plato FROM platosDePedidos WHERE id_pedido = ? ";
-const datosPlato = "SELECT precio,url_imagen,nombre FROM platos WHERE id = ?";
+const datosPlato = "SELECT precio,url_imagen,nombre,id FROM platos WHERE id = ?";
 const actualizarEstado = "UPDATE pedidos SET estado= ? WHERE id = ?";
 
 

@@ -9,5 +9,5 @@ CREATE TABLE pedidos (
       direccion VARCHAR (250) NOT NULL,
       id_usuario INT NOT NULL,
       CONSTRAINT FK_usuarioPedidos FOREIGN KEY (id_usuario)
-      REFERENCES usuarios(id)
+      REFERENCES usuarios(id)  ON DELETE CASCADE ON UPDATE CASCADE
 )

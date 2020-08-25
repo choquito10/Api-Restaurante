@@ -43,9 +43,9 @@ async function eliminarPlato({ id }) {
         if (resultado.affectedRows > 0) {
             return 'eliminacion exitosa'
         }
-        return 'no se pudo eliminar ese plato por que tiene relacion con algun pedido';
+        return 'no se pudo eliminar o no existe ese plato'
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error('ese plato esta relacionado con algunos pedidos y no se puede borrar')
     }
 
 }
