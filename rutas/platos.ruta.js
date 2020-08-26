@@ -26,7 +26,7 @@ ruta.post('/', verificarToken, verificarDatosDePlato, async(req, res, next) => {
 })
 
 
-ruta.patch('/', verificarToken, verificarDatosDePlato, verificarIdQueryParams, async(req, res, next) => {
+ruta.put('/', verificarToken, verificarDatosDePlato, verificarIdQueryParams, async(req, res, next) => {
     let { id } = req.query;
     let { precio, url_imagen, nombre } = req.body
     try {

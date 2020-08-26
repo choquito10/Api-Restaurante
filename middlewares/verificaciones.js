@@ -25,8 +25,8 @@ function verificarDatosRegistro(req, res, next) {
 }
 
 function verificarDatosPedido(req, res, next) {
-    let { descripcion, precio, forma_pago, direccion, email, id_plato } = req.body
-    if (descripcion && precio && forma_pago && direccion && email && id_plato) {
+    let { id_usuario, forma_pago, direccion, detalle } = req.body
+    if (id_usuario && forma_pago && direccion && detalle) {
         next()
     } else {
         next({ numero: 400, error: 'faltan datos para tomar su pedido' })

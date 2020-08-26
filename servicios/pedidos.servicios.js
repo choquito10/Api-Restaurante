@@ -1,16 +1,17 @@
 const sql = require('../DB/coneccionDB');
 const {
     traerPedidos,
-    buscarUsuario,
-    idPlato,
     insertarPedido,
-    obtenerIdPedido,
-    insertarEnplatosDePedidos,
-    idPedidoConIdPedido,
-    todoDelUsuario,
-    idPlatos,
-    datosPlato,
-    actualizarEstado
+    actualizarEstado,
+    Platos,
+    idPedido,
+    tabladeplatospedidos,
+    usuario,
+    pedidoEspecificoUser,
+    estado,
+    formaPago,
+    EspecificoAdmin,
+    revisionId
 } = require('../querys/pedidos.querys');
 
 
@@ -19,6 +20,12 @@ const {
 async function todosLosPedidos() {
     try {
         const [resultado] = await sql.query(traerPedidos)
+        for (let i = 0; i < resultado.length; i++) {
+            const [estatus] = await sql.query(estado, { replacements: [resultado[i].estado] })
+            const [pago] = await sql.query(formaPago, { replacements: [resultado[i].forma_pago] })
+            resultado[i].estado = estatus[0].significado
+            resultado[i].forma_pago = pago[0].significado
+        }
         return resultado
     } catch (error) {
         throw new Error(error)
@@ -27,82 +34,106 @@ async function todosLosPedidos() {
 
 
 
-function tiposDeId(id_plato) {
-    const convertido = JSON.parse(id_plato);
-    if (convertido.length > 0) {
-        return convertido
-    } else {
-        return id_plato
-    }
-}
-
-
-async function agregarPedido({ descripcion, precio, forma_pago, direccion, email, id_plato }) {
-    const resultadoArray = (tiposDeId(id_plato));
+async function agregarPedido({ id_usuario, forma_pago, direccion, detalle }) {
     try {
-        const [user] = await sql.query(buscarUsuario, { replacements: [email] })
-        if (user.length > 0 && typeof resultadoArray === 'object') {
-
-            let array = [];
-            for (let i = 0; i < resultadoArray.length; i++) {
-                const [idDelPlato] = await sql.query(idPlato, { replacements: [resultadoArray[i]] })
-                array.push(idDelPlato[0].id)
-            }
-
-            await sql.query(insertarPedido, { replacements: ['nuevo', new Date(), descripcion, forma_pago, precio, user[0].usuario, direccion, user[0].id] });
-            const [idPedido] = await sql.query(obtenerIdPedido, { replacements: [user[0].id] })
-
-            for (let i = 0; i < array.length; i++) {
-                await sql.query(insertarEnplatosDePedidos, { replacements: [idPedido[idPedido.length - 1].id, array[i]] })
-            }
-
-            return 'pedido tomado exitosamente ' + user[0].usuario;
-
-        } else {
-
-            await sql.query(idPlato, { replacements: [resultadoArray] })
-
-            await sql.query(insertarPedido, { replacements: ['nuevo', new Date(), descripcion, forma_pago, precio, user[0].usuario, direccion, user[0].id] });
-            const [idPedido] = await sql.query(obtenerIdPedido, { replacements: [user[0].id] })
-
-            await sql.query(insertarEnplatosDePedidos, { replacements: [idPedido[idPedido.length - 1].id, resultadoArray] })
-
-            return 'pedido tomado exitosamente ' + user[0].usuario;
-
+        const [user] = await sql.query(usuario, { replacements: [id_usuario] });
+        let descripcion = '';
+        let precio = 0;
+        let idsYcantidad = [];
+        for (let i = 0; i < detalle.length; i++) {
+            let [platos] = await sql.query(Platos, { replacements: [detalle[i].id_plato] })
+            descripcion += platos[0].nombre + " ";
+            precio += platos[0].precio;
+            idsYcantidad.push([detalle[i].id_plato, detalle[i].cantidad])
         }
+        await sql.query(insertarPedido, { replacements: [1, new Date(), descripcion, forma_pago, precio, user[0].usuario, direccion, id_usuario] })
+        const [pedido] = await sql.query(idPedido, { replacements: [user[0].usuario] })
+        for (let i = 0; i < idsYcantidad.length; i++) {
+            await sql.query(tabladeplatospedidos, { replacements: [pedido[pedido.length - 1].id, idsYcantidad[i][0], idsYcantidad[i][1]] })
+        }
+        return `pedido exitoso con numero de id ${pedido[pedido.length-1].id}`
     } catch (error) {
-        throw new Error('error en algun dato del pedido')
+        throw new Error('error en alguno de los datos ' + error.message)
     }
-
 }
 
 
 
-async function pedidoEspecifico(idPedi) {
+async function pedidoEspecificoUsuario(query, body) {
     try {
-        const [idPedido] = await sql.query(idPedidoConIdPedido, { replacements: [idPedi] });
-        if (idPedido.length > 0) {
-            let { estado, precio, forma_pago, id_usuario, id } = idPedido[0]
-            const [datosUser] = await sql.query(todoDelUsuario, { replacements: [id_usuario] })
-            let { direccion, usuario, nombre, email, telefono } = datosUser[0];
-            const [relacionPlatos] = await sql.query(idPlatos, { replacements: [id] })
-            let datosPlatos = [];
-            if (relacionPlatos.length > 0) {
-                for (let i = 0; i < relacionPlatos.length; i++) {
-                    const [losPlatos] = await sql.query(datosPlato, { replacements: [relacionPlatos[i].id_plato] })
-                    datosPlatos.push(losPlatos[0])
-                }
-            } else {
-                throw new Error('el pedido no tiene platos asignados aun')
+        const [idDelPedido] = await sql.query(revisionId, { replacements: [body.id_usuario, query.id] })
+        if (idDelPedido.length > 0) {
+            const [pedido] = await sql.query(pedidoEspecificoUser, { replacements: [body.id_usuario, query.id, query.id] })
+            let idsplatos = [];
+            for (let i = 0; i < pedido.length; i++) {
+                idsplatos.push([pedido[i].id_plato, pedido[i].cantidad])
             }
-            return { estado, precio, forma_pago, direccion, usuario, nombre, email, telefono, platosDelPedido: datosPlatos };
+            let caractplatos = [];
+            for (let i = 0; i < idsplatos.length; i++) {
+                const [element] = await sql.query(Platos, { replacements: [idsplatos[i][0]] })
+                caractplatos.push({ plato: element[0], cantidad: idsplatos[i][1] })
+            }
+            const [estatus] = await sql.query(estado, { replacements: [pedido[0].estado] })
+            const [pago] = await sql.query(formaPago, { replacements: [pedido[0].forma_pago] })
+            let u = pedido[0]
+            return {
+                usuario: u.usuario,
+                nombre: u.nombre,
+                email: u.email,
+                telefono: u.telefono,
+                direccion: u.direccion,
+                estado: estatus[0].significado,
+                hora: u.hora,
+                descripcion: u.descripcion,
+                forma_pago: pago[0].significado,
+                precio: u.precio,
+                platos: caractplatos
+            }
         }
-        throw new Error('id del pedido erroneo')
-
+        throw new Error('no se encontraron pedidos')
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error.message)
     }
 }
+
+
+
+async function pedidoEspecificoAdmin(query) {
+    try {
+        const [pedido] = await sql.query(EspecificoAdmin, { replacements: [query.id, query.id] })
+        if (pedido.length > 0) {
+            let idsplatos = [];
+            for (let i = 0; i < pedido.length; i += 2) {
+                idsplatos.push([pedido[i].id_plato, pedido[i].cantidad])
+            }
+            let caractplatos = [];
+            for (let i = 0; i < idsplatos.length; i++) {
+                const [element] = await sql.query(Platos, { replacements: [idsplatos[i][0]] })
+                caractplatos.push({ plato: element[0], cantidad: idsplatos[i][1] })
+            }
+            const [estatus] = await sql.query(estado, { replacements: [pedido[0].estado] })
+            const [pago] = await sql.query(formaPago, { replacements: [pedido[0].forma_pago] })
+            let u = pedido[0]
+            return {
+                usuario: u.usuario,
+                nombre: u.nombre,
+                email: u.email,
+                telefono: u.telefono,
+                direccion: u.direccion,
+                estado: estatus[0].significado,
+                hora: u.hora,
+                descripcion: u.descripcion,
+                forma_pago: pago[0].significado,
+                precio: u.precio,
+                platos: caractplatos
+            }
+        }
+        throw new Error('no se encontraron pedidos')
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
 
 
 
@@ -122,6 +153,7 @@ async function actualizarPedido(id, estado) {
 module.exports = {
     todosLosPedidos,
     agregarPedido,
-    pedidoEspecifico,
-    actualizarPedido
+    pedidoEspecificoUsuario,
+    actualizarPedido,
+    pedidoEspecificoAdmin
 }

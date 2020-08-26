@@ -1,26 +1,27 @@
 const traerPedidos = "SELECT id,estado,hora,descripcion,forma_pago,precio,usuario,direccion FROM pedidos";
-const buscarUsuario = "SELECT id,usuario FROM usuarios WHERE email = ?";
-const insertarEnplatosDePedidos = "INSERT INTO platosDePedidos (id_pedido,id_plato) VALUES (?,?)"
+const pedidoEspecificoUser = "SELECT * FROM usuarios JOIN pedidos on usuarios.id = ? AND pedidos.id = ? JOIN platosDePedidos on platosDePedidos.id_pedido = ?";
+const EspecificoAdmin = "SELECT * FROM usuarios JOIN pedidos on pedidos.id = ? JOIN platosDePedidos on platosDePedidos.id_pedido = ?";
+const usuario = "SELECT * FROM usuarios WHERE id = ?"
 const insertarPedido = "INSERT INTO pedidos (estado,hora,descripcion,forma_pago,precio,usuario,direccion,id_usuario) VALUES (?,?,?,?,?,?,?,?)";
-const obtenerIdPedido = "SELECT id FROM pedidos WHERE id_usuario = ?";
-const idPlato = "SELECT id FROM platos WHERE id = ?";
-const idPedidoConIdPedido = "SELECT * FROM pedidos WHERE id = ?";
-const todoDelUsuario = "SELECT * FROM usuarios WHERE id = ?";
-const idPlatos = "SELECT id_plato FROM platosDePedidos WHERE id_pedido = ? ";
-const datosPlato = "SELECT precio,url_imagen,nombre,id FROM platos WHERE id = ?";
+const idPedido = "SELECT * FROM pedidos WHERE usuario = ?";
+const Platos = "SELECT * FROM platos WHERE id = ?"
 const actualizarEstado = "UPDATE pedidos SET estado= ? WHERE id = ?";
-
+const tabladeplatospedidos = "INSERT INTO platosDePedidos(id_pedido, id_plato,cantidad) VALUES (?,?,?)"
+const formaPago = "SELECT significado FROM forma_pago WHERE id_forma_pago = ?";
+const estado = "SELECT significado FROM estado WHERE id_estado = ?";
+const revisionId = "SELECT id FROM pedidos WHERE pedidos.id_usuario = ? AND id = ?";
 
 module.exports = {
     traerPedidos,
-    buscarUsuario,
     insertarPedido,
-    obtenerIdPedido,
-    insertarEnplatosDePedidos,
-    idPlato,
-    idPedidoConIdPedido,
-    todoDelUsuario,
-    idPlatos,
-    datosPlato,
-    actualizarEstado
+    Platos,
+    actualizarEstado,
+    idPedido,
+    tabladeplatospedidos,
+    usuario,
+    pedidoEspecificoUser,
+    estado,
+    formaPago,
+    EspecificoAdmin,
+    revisionId
 }

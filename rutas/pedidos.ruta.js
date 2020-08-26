@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const ruta = Router();
-const { todosLosPedidos, agregarPedido, pedidoEspecifico, actualizarPedido } = require('../servicios/pedidos.servicios')
+const { todosLosPedidos, agregarPedido, pedidoEspecificoUsuario, actualizarPedido, pedidoEspecificoAdmin } = require('../servicios/pedidos.servicios')
 const { verificarToken, verificarDatosPedido, verificarIdQueryParams } = require('../middlewares/verificaciones');
 
 
@@ -25,15 +25,25 @@ ruta.post('/', verificarDatosPedido, async(req, res, next) => {
 })
 
 
-ruta.get('/unico', verificarToken, verificarIdQueryParams, async(req, res, next) => {
-    let { id } = req.query
+ruta.get('/usuario', verificarIdQueryParams, async(req, res, next) => {
     try {
-        const resultado = await pedidoEspecifico(id);
+        const resultado = await pedidoEspecificoUsuario(req.query, req.body);
         res.json(resultado)
     } catch (error) {
-        next({ numero: 400, error })
+        next({ numero: 400, error: error.message })
     }
 })
+
+
+ruta.get('/admin', verificarToken, verificarIdQueryParams, async(req, res, next) => {
+    try {
+        const resultado = await pedidoEspecificoAdmin(req.query);
+        res.json(resultado)
+    } catch (error) {
+        next({ numero: 400, error: error.message })
+    }
+})
+
 
 
 ruta.patch('/', verificarToken, verificarIdQueryParams, async(req, res, next) => {
