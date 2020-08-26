@@ -20,11 +20,11 @@
 ## rutas de pedidos
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/8edb2e76b0471180423f)
 
-## rutas de usuarios
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/241e1a35ba0b66e6054a))
-
 ## rutas de platos
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/b44912104e18c6c5fc1a)
+
+## rutas de usuarios
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/241e1a35ba0b66e6054a)
 
 
 
