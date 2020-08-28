@@ -1,4 +1,4 @@
-const { jwt, secreto } = require('../jwt/jwt')
+const { jwt, secreto, secretoUsuario } = require('../jwt/jwt')
 
 function verificarToken(req, res, next) {
     if (req.get('authorization')) {
@@ -62,6 +62,68 @@ function verificarEmail(req, res, next) {
     }
 }
 
+function verificarNuevoAdmin(req, res, next) {
+    let { numero, email } = req.body
+    if ((numero == 1 || numero == 0) && email) {
+        next()
+    } else {
+        next({ numero: 400, error: 'error en los datos ingresados' })
+    }
+
+}
+
+
+function verificarEstado(req, res, next) {
+    let { estado } = req.body
+    if (estado == 1 || estado == 2 || estado == 3) {
+        next()
+    } else {
+        next({ numero: 400, error: 'dato de estado invalido' })
+    }
+}
+
+
+function verificarFormaPago(req, res, next) {
+    let { forma_pago } = req.body
+    if (forma_pago == 1 || forma_pago == 2) {
+        next()
+    } else {
+        next({ numero: 400, error: 'dato de forma_pago invalido' })
+    }
+}
+
+
+function verificarTokenUsuario(req, res, next) {
+    if (req.get('authorization')) {
+        const token = req.get('authorization').split(' ')[1]
+        const verificar = jwt.verify(token, secretoUsuario, (err, decoded) => {
+            decoded ? next() : next(err)
+        });
+        return verificar
+    } else {
+        next({ numero: 400, error: 'falta el token' })
+    }
+
+}
+
+function veriricarPedidoUsuario(req, res, next) {
+    if (req.get('authorization')) {
+        const token = req.get('authorization').split(' ')[1]
+        let { id_usuario } = req.body
+        const verificar = jwt.verify(token, secretoUsuario, (err, decoded) => {
+            if (decoded.usuario == id_usuario) {
+                return next();
+            } else {
+                return next(err)
+            }
+        });
+        return verificar
+    } else {
+        next({ numero: 400, error: 'error en el token' })
+    }
+}
+
+
 
 module.exports = {
     verificarToken,
@@ -69,5 +131,10 @@ module.exports = {
     verificarDatosPedido,
     verificarDatosDePlato,
     verificarIdQueryParams,
-    verificarEmail
+    verificarEmail,
+    verificarNuevoAdmin,
+    verificarEstado,
+    verificarFormaPago,
+    verificarTokenUsuario,
+    veriricarPedidoUsuario
 }

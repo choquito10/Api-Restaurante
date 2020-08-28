@@ -10,7 +10,6 @@ const {
     pedidoEspecificoUser,
     estado,
     formaPago,
-    EspecificoAdmin,
     revisionId,
     idplatos,
     idUSUARIO

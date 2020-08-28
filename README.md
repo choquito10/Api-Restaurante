@@ -20,11 +20,25 @@
 ## rutas de pedidos
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/8edb2e76b0471180423f)
 
+**DATOS PARA HACER LAS PRUEBAS PEDIDOS**
+1. id_usuario debe ser un numero
+2. forma_pago debe ser un numero (1 o 2 ) significan efectivo o credito 
+3. ver su propio pedido enviar token, id usuario y id pedido
+4. actualizar el estado de un pedido debe ser un numero (1 2 3) significan nuevo cocinando y finalizado
+
+
 ## rutas de platos
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/b44912104e18c6c5fc1a)
 
+
+
 ## rutas de usuarios
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/241e1a35ba0b66e6054a)
+
+**DATOS PARA HACER LAS PRUEBAS USUARIOS**
+1. para actualizar el rol de cada usuario debe ser un numero (1 o 0) admin o noAdmin
+
+
 
 
 ## url del repositorio

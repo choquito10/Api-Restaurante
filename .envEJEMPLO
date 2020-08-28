@@ -4,6 +4,6 @@ CLAVE_DB=(clave de la base de datos)
 PUERTO_DB=(puerto de la base de datos)
 URL_DB=(url de la base de datos)
 DB=Restaurante => este nombre dejarlo igual
-SECRETO=(aqui va el secreto para el jwt)
-
+SECRETO=(aqui va el secreto para el jwt de admin)
+SECRETO_USUARIO = ((aqui va el secreto para el jwt de usuarioNormal)
   
