@@ -1,6 +1,6 @@
-const { inicioSesion, registrarse } = require('../querys/usuarios.querys')
+const { inicioSesion, registrarse, cambiarPermisos } = require('../querys/usuarios.querys')
 const sql = require('../DB/coneccionDB');
-const { jwt, secreto } = require('../jwt/jwt');
+const { jwt, secreto, secretoUsuario } = require('../jwt/jwt');
 require('dotenv').config()
 
 
@@ -11,7 +11,8 @@ async function iniciarLaSesion({ usuario, email, clave }) {
             const token = jwt.sign({ usuario: resultado[0].id }, secreto, { expiresIn: '1800s' })
             return { token, id: resultado[0].id }
         } else if (resultado.length > 0 && resultado[0].rol_admin === 0) {
-            return `bienvenido ${email} su id es ${resultado[0].id}`
+            const token = jwt.sign({ usuario: resultado[0].id }, secretoUsuario, { expiresIn: '1800s' })
+            return { token, id: resultado[0].id }
         }
         throw new Error('usuario o contraseña incorrecta')
     } catch (error) {
@@ -32,7 +33,22 @@ async function registro({ usuario, nombre, email, telefono, direccion, clave }) 
 
 }
 
+
+async function modificarAdmin({ numero, email }) {
+    try {
+        const [resultado] = await sql.query(cambiarPermisos, { replacements: [numero, email] });
+        if (resultado.affectedRows > 0) {
+            return 'se cambio correctamente el rol del usuario'
+        }
+        throw new Error('ya se actualizo o ya tiene ese rol')
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+
 module.exports = {
     iniciarLaSesion,
-    registro
+    registro,
+    modificarAdmin
 }

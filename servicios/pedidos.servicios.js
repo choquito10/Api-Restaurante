@@ -11,7 +11,9 @@ const {
     estado,
     formaPago,
     EspecificoAdmin,
-    revisionId
+    revisionId,
+    idplatos,
+    idUSUARIO
 } = require('../querys/pedidos.querys');
 
 
@@ -25,6 +27,14 @@ async function todosLosPedidos() {
             const [pago] = await sql.query(formaPago, { replacements: [resultado[i].forma_pago] })
             resultado[i].estado = estatus[0].significado
             resultado[i].forma_pago = pago[0].significado
+            const [iplatos] = await sql.query(idplatos, { replacements: [resultado[i].id] })
+            let pls = [];
+            for (let l = 0; l < iplatos.length; l++) {
+                const [cada] = await sql.query(Platos, { replacements: [iplatos[l].id_plato] })
+                cada[0].cantidad = iplatos[0].cantidad
+                pls.push(cada[0])
+            }
+            resultado[i].platos = pls
         }
         return resultado
     } catch (error) {
@@ -71,7 +81,8 @@ async function pedidoEspecificoUsuario(query, body) {
             let caractplatos = [];
             for (let i = 0; i < idsplatos.length; i++) {
                 const [element] = await sql.query(Platos, { replacements: [idsplatos[i][0]] })
-                caractplatos.push({ plato: element[0], cantidad: idsplatos[i][1] })
+                element[0].cantidad = idsplatos[i][1]
+                caractplatos.push(element[0])
             }
             const [estatus] = await sql.query(estado, { replacements: [pedido[0].estado] })
             const [pago] = await sql.query(formaPago, { replacements: [pedido[0].forma_pago] })
@@ -100,16 +111,18 @@ async function pedidoEspecificoUsuario(query, body) {
 
 async function pedidoEspecificoAdmin(query) {
     try {
-        const [pedido] = await sql.query(EspecificoAdmin, { replacements: [query.id, query.id] })
-        if (pedido.length > 0) {
+        const [usu] = await sql.query(idUSUARIO, { replacements: [query.id] })
+        if (usu.length > 0) {
+            const [pedido] = await sql.query(pedidoEspecificoUser, { replacements: [usu[0].id_usuario, query.id, query.id] })
             let idsplatos = [];
-            for (let i = 0; i < pedido.length; i += 2) {
+            for (let i = 0; i < pedido.length; i++) {
                 idsplatos.push([pedido[i].id_plato, pedido[i].cantidad])
             }
             let caractplatos = [];
             for (let i = 0; i < idsplatos.length; i++) {
                 const [element] = await sql.query(Platos, { replacements: [idsplatos[i][0]] })
-                caractplatos.push({ plato: element[0], cantidad: idsplatos[i][1] })
+                element[0].cantidad = idsplatos[i][1]
+                caractplatos.push(element[0])
             }
             const [estatus] = await sql.query(estado, { replacements: [pedido[0].estado] })
             const [pago] = await sql.query(formaPago, { replacements: [pedido[0].forma_pago] })
@@ -143,7 +156,7 @@ async function actualizarPedido(id, estado) {
         if (resultado.affectedRows > 0) {
             return 'actualizacion exitosa'
         }
-        throw new Error('ya se actualizo o no se encontro el pedido')
+        return ('ya se actualizo o no se encontro el pedido')
     } catch (error) {
         throw new Error(error)
     }
