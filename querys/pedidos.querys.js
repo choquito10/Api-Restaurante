@@ -11,6 +11,7 @@ const estado = "SELECT significado FROM estado WHERE id_estado = ?";
 const revisionId = "SELECT id FROM pedidos WHERE pedidos.id_usuario = ? AND id = ?";
 const idplatos = "SELECT * FROM platosDePedidos WHERE id_pedido = ?";
 const idUSUARIO = "SELECT id_usuario FROM pedidos WHERE id = ?"
+const eliminar = "DELETE FROM pedidos WHERE id = ?"
 
 module.exports = {
     traerPedidos,
@@ -25,5 +26,6 @@ module.exports = {
     formaPago,
     revisionId,
     idplatos,
-    idUSUARIO
+    idUSUARIO,
+    eliminar
 }

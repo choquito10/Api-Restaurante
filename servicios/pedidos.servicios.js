@@ -12,7 +12,8 @@ const {
     formaPago,
     revisionId,
     idplatos,
-    idUSUARIO
+    idUSUARIO,
+    eliminar
 } = require('../querys/pedidos.querys');
 
 
@@ -162,10 +163,26 @@ async function actualizarPedido(id, estado) {
 }
 
 
+
+async function eliminarPedido({ id }) {
+    try {
+        const [resultado] = await sql.query(eliminar, { replacements: [id] });
+        if (resultado.affectedRows > 0) {
+            return 'eliminado con exito'
+        }
+        return 'no se encontro ningun pedido con ese id'
+    } catch (error) {
+        throw new Error(error.message)
+    }
+
+}
+
+
 module.exports = {
     todosLosPedidos,
     agregarPedido,
     pedidoEspecificoUsuario,
     actualizarPedido,
-    pedidoEspecificoAdmin
+    pedidoEspecificoAdmin,
+    eliminarPedido
 }

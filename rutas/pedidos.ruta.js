@@ -5,7 +5,8 @@ const {
     agregarPedido,
     pedidoEspecificoUsuario,
     actualizarPedido,
-    pedidoEspecificoAdmin
+    pedidoEspecificoAdmin,
+    eliminarPedido
 } = require('../servicios/pedidos.servicios')
 const {
     verificarToken,
@@ -63,6 +64,15 @@ ruta.get('/admin', verificarToken, verificarIdQueryParams, async(req, res, next)
 ruta.patch('/', verificarToken, verificarIdQueryParams, verificarEstado, async(req, res, next) => {
     try {
         const resultado = await actualizarPedido(req.query, req.body);
+        res.json(resultado)
+    } catch (error) {
+        next({ numero: 400, error: error.message })
+    }
+})
+
+ruta.delete('/', verificarToken, verificarIdQueryParams, async(req, res, next) => {
+    try {
+        const resultado = await eliminarPedido(req.query);
         res.json(resultado)
     } catch (error) {
         next({ numero: 400, error: error.message })
