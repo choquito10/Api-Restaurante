@@ -25,6 +25,7 @@
 2. forma_pago debe ser un numero (1 o 2 ) significan efectivo o credito 
 3. ver su propio pedido enviar token, id usuario y id pedido
 4. actualizar el estado de un pedido debe ser un numero (1 2 3) significan nuevo cocinando y finalizado
+5. eliminar pedido necesita token de usuario admin y el id del pedido
 
 
 ## rutas de platos
